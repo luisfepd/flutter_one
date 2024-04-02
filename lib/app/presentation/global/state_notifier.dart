@@ -4,7 +4,7 @@ abstract class StateNotifier<State> extends ChangeNotifier {
   StateNotifier(this._state) : _oldState = _state;
 
   State _state, _oldState;
-  bool _mounted = true;
+  final bool _mounted = true;
 
   State get state => _state;
   State get oldState => _oldState;
@@ -31,11 +31,11 @@ abstract class StateNotifier<State> extends ChangeNotifier {
     }
   }
 
-  @override
-  void dispose() {
-    _mounted = false;
-    print('✅   ------- Dispose being called');
+  // @override
+  // void dispose() {
+  //   _mounted = false;
+  //   //print('✅   ------- Dispose being called');
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 }

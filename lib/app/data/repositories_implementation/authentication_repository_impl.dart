@@ -18,7 +18,6 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final AccountAPI _accountAPI;
 
   @override
-  // TODO: implement isSignedIn
   Future<bool> get isSignedIn async {
     final sessionId = await _sessionService.sessionId;
     return sessionId != null;
@@ -39,8 +38,6 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
           username: username,
           requestToken: requestToken,
         );
-
-        //print('✅------------------: Request token: $requestToken');
 
         return loginResult.when(
           left: (failure) async {

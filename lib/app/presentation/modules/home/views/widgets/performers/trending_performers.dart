@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../domain/either/either.dart';
-import '../../../../../../domain/failures/http_request/http_request_failure.dart';
-import '../../../../../../domain/models/performer/performer.dart';
-import '../../../../../../domain/repositories/trending_repository.dart';
+import '../../../../../global/widgets/request_failed.dart';
+import '../../../controller/home_controller.dart';
 import 'performers_tile.dart';
-
-typedef EitherListPerformer = Either<HttpRequestFailure, List<Performer>>;
 
 class TrendingPerformers extends StatefulWidget {
   const TrendingPerformers({super.key});
@@ -17,42 +13,58 @@ class TrendingPerformers extends StatefulWidget {
 }
 
 class _TrendingPerformersState extends State<TrendingPerformers> {
-  late Future<EitherListPerformer> _future;
+  final _pageController = PageController();
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _future = context.read<TrendingRepository>().getPerformers();
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final HomeController controller = context.watch();
+    final state = controller.state;
     return Expanded(
-      child: FutureBuilder<EitherListPerformer>(
-        future: _future,
-        builder: (_, snapshot) {
-          if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          return snapshot.data!.when(
-            left: (failure) => Text(failure.toString()),
-            right: (list) => PageView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                final performer = list[index];
-                return PerformersTile(performer: performer);
-              },
-            ),
-          );
-        },
-      ),
-    );
+        child: state.when(
+            loading: (_) => const Center(child: CircularProgressIndicator()),
+            failed: (_) => RequestFailed(onRetry: () {}),
+            loaded: (_, __, performers) => Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      itemCount: performers.length,
+                      itemBuilder: (context, index) {
+                        final performer = performers[index];
+                        return PerformersTile(performer: performer);
+                      },
+                    ),
+                    Positioned(
+                      bottom: 30,
+                      child: AnimatedBuilder(
+                        animation: _pageController,
+                        builder: (_, __) {
+                          final int currentCard =
+                              _pageController.page?.toInt() ?? 0;
+                          return Row(
+                            children: List.generate(
+                                performers.length,
+                                (index) => Icon(
+                                      Icons.circle,
+                                      size: 14,
+                                      color: currentCard == index
+                                          ? Colors.red
+                                          : Colors.white30,
+                                    )),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
+                )));
   }
 }

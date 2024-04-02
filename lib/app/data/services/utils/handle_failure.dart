@@ -4,7 +4,6 @@ import '../../http/http.dart';
 
 Either<HttpRequestFailure, R> handleHttpFailure<R>(HttpFailure httpFailure) {
   final httpStatusCode = httpFailure.statusCode;
-  print(httpFailure.exception);
   final failure = () {
     switch (httpStatusCode) {
       case 404:

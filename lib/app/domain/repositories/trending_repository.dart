@@ -8,5 +8,7 @@ abstract class TrendingRepository {
   Future<Either<HttpRequestFailure, List<Media>>> getMoviesAndSeries(
     TimeWindow timeWindow,
   );
-  Future<Either<HttpRequestFailure, List<Performer>>> getPerformers();
+  Future<Either<HttpRequestFailure, List<Performer>>> getPerformers(
+    TimeWindow timeWindow,
+  );
 }

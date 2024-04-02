@@ -35,7 +35,7 @@ class _SplashViewState extends State<SplashView> {
 
     final hasInternet = await connectivityRepository.hasInternet;
 
-    print('✅ has internet: $hasInternet');
+    //print('✅ has internet: $hasInternet');
 
     if (hasInternet) {
       final isSignedIn = await authenticationRepository.isSignedIn;
